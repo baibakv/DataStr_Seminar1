@@ -1,0 +1,245 @@
+package dataStr;
+
+import java.util.ArrayList;
+
+public class MyArrayList<Ttype> {
+	//mainīgie
+	private Ttype[] list;
+	private int howManyElements = 0;
+	private final int DEFAULT_SIZE = 8;
+	private int size = DEFAULT_SIZE;
+	
+	//konstruktori
+	public MyArrayList() {
+		list = (Ttype[]) new Object[size];
+	}
+	
+	public MyArrayList(int inputSize) {
+		if(inputSize > 0 && inputSize < 100000) {
+			size = inputSize;
+		}
+		
+		list = (Ttype[]) new Object[size];
+		
+	}
+	
+	//funkcijas
+	private boolean isEmpty() {
+		//1. garais pieraksts
+		/*if(howManyElements == 0) {
+			return true;
+		}
+		else
+		{
+			return false;
+		}*/
+		//2.īsais if-else
+		//return (howManyElements == 0) ? true : false;
+		//Cits piemērs īsajam if-else
+		/*
+		int aaa = 0;
+		if(howManyElements == 0) {
+			aaa = 3*100;
+		}
+		else
+		{
+			aaa = 400/3;
+		}
+		
+		aaa =(howManyElements == 0)? (3*100) : (400/3) ;
+		*/
+		
+				
+		//3. ar atgriezto vertību
+		return (howManyElements == 0);
+		
+	}
+	
+	private boolean isFull() {
+		//return (howManyElements==size) ? true : false;
+		return (howManyElements==size);
+	}
+	
+	//resize
+	private void resize() {
+		int newSize = (howManyElements < 200) ? (size * 2) : (int)(size * 1.5);
+		Ttype[] newList = (Ttype[]) new Object[newSize];
+		
+		for(int i = 0; i < howManyElements; i++) {
+			newList[i] = list[i];
+		}
+		
+		list = newList;
+		size = newSize;	
+		System.gc();
+		
+	}
+
+	public void add(Ttype element) {
+		if(isFull()) {
+			resize();
+		}
+		
+		list[howManyElements++] = element;
+		//howManyElements++; <- palielināšanu veikt cita koda rindiņā
+	}
+	
+	public void add(Ttype element, int index) throws IllegalArgumentException  {
+		if(index < 0){
+			throw new IllegalArgumentException("Nav iespējams pievienot elementu, jo indekss ir negatīvs");
+		}
+
+		if(index > howManyElements) {
+			throw new IllegalArgumentException("Nav iespējams pievienot elementu, jo indekss ir lielāks par atļauto");
+		}
+		
+		if(index == howManyElements) {//gadījums, ja grib kā pēdejo saraksta elemntu pievienot
+			add(element);
+			return;//apstādina funkcija darbību. ja nelietojam return, tad lieotjam elso bloku pēc if
+		}
+		
+		if(isFull()) {
+			resize();
+		}
+		
+		for(int i = howManyElements; i > index; i--) {
+			list[i] = list[i-1];
+		}
+
+		list[index] = element;
+		howManyElements++;
+	}
+	
+	public int getHowManyElements() {
+		return howManyElements;
+	}
+	
+	//1. funkcijas deklarācija
+	public void remove(int index) throws Exception {
+		if(isEmpty()) {
+			throw new Exception("Saraksts ir tukšs, līdz ar to neko nevar izdzēst");
+		}
+		if(index < 0){
+			throw new IllegalArgumentException("Nevar izdzēst elementu, jo indekss ir negatīvs");
+		}
+		if(index >= howManyElements) {
+			throw new IllegalArgumentException("Nav iespējams idzēst elementu, jo indekss ir lielāks vai vienāds ar elementu skaitu");
+		}
+		
+		for(int i = index; i < howManyElements-1; i++) {
+			list[i] = list[i+1];
+		}
+		
+		list[howManyElements-1] = null;//priekš referenču vērtībām būs null
+		howManyElements--; 
+		//abas iepriekšējas koda rindas var optimizēt -> list[--howManyElements] = ' ';
+
+	}
+
+	public Ttype get(int index) throws Exception {
+		if(isEmpty()) {
+			throw new Exception("Saraksts ir tukšs, līdz ar to nevar iegūt elementu");
+		}
+		
+		if(index < 0){
+			throw new IllegalArgumentException("Nevar iegūt elementu, jo indekss ir negatīvs");
+		}
+		
+		if(index >= howManyElements) {
+			throw new IllegalArgumentException("Nav iespējams iegūt elementu, jo indekss ir lielāks vai vienāds ar elementu skaitu");
+		}
+		
+		return list[index];
+	}
+	
+	
+	public ArrayList<Integer> search(Ttype element) throws Exception{
+		if(isEmpty()) {
+			throw new Exception("Saraksts ir tukšs, līdz ar to nav ieespējams veikt elementa meklēšanu");
+		}
+		
+		ArrayList<Integer> indexArrayList = new ArrayList<Integer>();
+		for(int i = 0; i < howManyElements; i++) {
+			if(list[i].equals(element)) {//referencu datu tipiem jjāizmanto equals salīdzinašanā
+				indexArrayList.add(i);
+			}
+		}
+		
+		if(indexArrayList.isEmpty()) {
+			throw new Exception("Meklētais elements " 
+		+ element + " neatrodas sarakstā");
+		}
+		
+		return indexArrayList;
+		
+	}
+	
+	public Ttype[] getNextElements(Ttype element) throws Exception{
+		ArrayList<Integer> arrayListForIndexes = search(element);
+		
+		int howManyNextElements = arrayListForIndexes.size();
+		//meklētais elements ir arī pēdejais srakstā un aiz viņa nekā nav
+		if(arrayListForIndexes.get(arrayListForIndexes.size()-1)
+				== howManyElements-1 ) {
+			howManyNextElements--;
+		}
+		
+		Ttype[] nextElements = (Ttype[]) new Object[howManyNextElements];
+		int indexForNextElementArray = 0;
+		
+		for(int i = 0; i < howManyNextElements; i++) {
+			int nextElementIndex = arrayListForIndexes.get(i)+1;
+			nextElements[indexForNextElementArray] = list[nextElementIndex];
+			indexForNextElementArray++;
+		}
+		
+		return nextElements;
+		
+	}
+	//TODO var iedot ka ievades datu - augošā vai dilstošā secībā
+	public void sort() throws Exception{
+		if(isEmpty()) {
+			throw new Exception("Saraksts ir tukšs, līdz ar to nav ieespējams veikt kārtošanu");
+		}
+		//TODO ja vēlas, var parbaudīt,ka ir tikai 1 elements		
+		for(int i = 0; i < howManyElements; i++) {
+			for(int j = 0; j < howManyElements; j++) {
+				//if(list[i] > list[j]) {
+				if( ((Comparable)list[i]).compareTo(list[j]) > 0) {
+					Ttype temp = list[i];
+					list[i] = list[j];
+					list[j] = temp;
+				}
+			}
+		}
+		
+		
+	}
+	
+	public void print() throws Exception{
+		if(isEmpty()) {
+			throw new Exception("Saraksts ir tukšs, līdz ar to nav ieespējams veikt izprintēšanu");
+		}
+		
+		for(int i = 0; i < howManyElements; i++) {
+			System.out.print(list[i] + " ");
+		}
+		System.out.println();
+		
+	}
+	
+	public void makeEmpty() {
+		//TODO ja velas, tad pieprasit apstiprinajumu no lietotaja, ka nav tukss un vai velas dzest
+		list = null;//atkabinu referenci no datiem un tādā veida zaudēju datus
+		System.gc();
+		howManyElements = 0;
+		size = DEFAULT_SIZE;
+		list = (Ttype[]) new Object[size];
+		
+	}
+	
+	
+	
+	
+	
+}
