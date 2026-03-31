@@ -8,7 +8,7 @@ import model.Student;
 public class MainService {
 
 	public static void main(String[] args) {
-		System.out.println("======== DARBS AR SIMBOLIEM ========");
+		System.out.println("============== DARBS AR SIMBOLIEM ==============");
 		MyArrayList<Character> symbols = new MyArrayList<Character>(3);
 		symbols.add('a');// a
 		symbols.add('b');// a b
@@ -60,7 +60,7 @@ public class MainService {
 			System.out.println(e);
 		}
 		
-		System.out.println("======== DARBS AR STUDENTIEM ========");
+		System.out.println("============== DARBS AR STUDENTIEM ==============");
 		MyArrayList<Student> allStudents = new MyArrayList<Student>();
 		Student s1 = new Student("Janis", "Berzins", "121212-67890");
 		Student s2 = new Student("Baiba", "Kvizikevica", "122323-23456");
@@ -84,13 +84,13 @@ public class MainService {
 			System.out.println(allStudents.search(s3));//0 <-kura indeksā galbājās Līga
 			
 			System.out.println();
-			System.out.println("padodot Līgu, aiz viņas ir Jānis:");
+			System.out.println("Meklē, kurš students sarakstā ir aiz Līgas:");
 			System.out.println(
 					Arrays.toString(allStudents.getNextElements(s3)));
 			//^^ padodot Līgu, aiz viņas ir Jānis
 			
 			System.out.println();
-			System.out.println("Kšrtot studentus:");
+			System.out.println("Kārtot studentus:");
 			allStudents.sort();
 			allStudents.print();//Liga Baiba Janis
 			
